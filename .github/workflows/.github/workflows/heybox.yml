@@ -1,0 +1,25 @@
+
+Enter file contents here
+name: 小黑盒每日签到
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 设置 Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: 安装依赖
+        run: npm install
+      - name: 执行每日签到
+        env:
+          heybox_ck: ${{ secrets.heybox_ck }}
+        run: npm run heybox_sign
