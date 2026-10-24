@@ -17,7 +17,19 @@ jobs:
           node-version: 18
       - name: 安装依赖
         run: npm install
-      - name: 执行每日签到
+      - name: 每日签到
         env:
           heybox_ck: ${{ secrets.heybox_ck }}
         run: npm run heybox_sign
+      - name: 领取奖励
+        env:
+          heybox_ck: ${{ secrets.heybox_ck }}
+        run: npm run heybox_claim
+      - name: 冲刺任务
+        env:
+          heybox_ck: ${{ secrets.heybox_ck }}
+        run: npm run heybox_rush
+      - name: 转盘抽奖
+        env:
+          heybox_ck: ${{ secrets.heybox_ck }}
+        run: npm run heybox_roll
