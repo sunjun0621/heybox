@@ -66,6 +66,8 @@ function flattenSpecialTargets(payload) {
   const targets = [];
   const seen = new Set();
   for (const group of groups) {
+    // closed 组是已结束的券,收进来会把抢券时间推到明天导致长睡
+    if (group === "closed") continue;
     const list = Array.isArray(special[group]) ? special[group] : [];
     for (const item of list) {
       const target = normalizeRushTarget(item, group);
@@ -188,6 +190,8 @@ function mergeMetadata(targets, discovered) {
 function buildPlans(targets) {
   const nowMs = Date.now();
   const fixedAt = parseStartTime(CONFIG.rushAt, nowMs);
+  // 没有固定抢券时间时,计划最多允许排到 2 小时后,防止把已过时间的券推到明天长睡
+  const maxAheadMs = fixedAt ? Infinity : 2 * 60 * 60 * 1000;
   const plans = new Map();
   for (const target of targets) {
     if (CONFIG.skipTerminalTargets && isTerminalTarget(target)) {
@@ -195,6 +199,10 @@ function buildPlans(targets) {
       continue;
     }
     const atMs = fixedAt || parseTagStartTime(target.tag, nowMs) || nowMs;
+    if (atMs - nowMs > maxAheadMs) {
+      $.log(`Skip pool=${target.poolId}: 计划时间超出 ${Math.round((atMs - nowMs) / 60000)} 分钟,视为无效目标(${target.tag || "无时间标签"})`);
+      continue;
+    }
     const key = String(atMs);
     if (!plans.has(key)) plans.set(key, []);
     plans.get(key).push(target);
