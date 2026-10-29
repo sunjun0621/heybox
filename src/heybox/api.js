@@ -39,8 +39,8 @@ class HeyboxAppClient extends HttpClient {
       mode: "request",
       path,
       time: String(timeSec),
-      imei: this.account.imei,
-      heybox_id: this.account.heyboxId,
+      // hkey 签名服务自 2026-10-28 起要求必填 os_version(系统版本字符串),缺了会返回 400
+      os_version: APP_PROFILE.os_version,
     });
     const response = await this.get({
       url: `${HKEY_API}?${query}`,
@@ -126,8 +126,8 @@ class HeyboxAppClient extends HttpClient {
         path,
         text: textPayload,
         time: timeSec,
-        imei: this.account.imei,
-        heybox_id: this.account.heyboxId,
+        // hkey 签名服务自 2026-10-28 起要求必填 os_version(系统版本字符串),缺了会返回 400
+        os_version: APP_PROFILE.os_version,
       }),
     });
     const rp = hkeyResponse.result?.result || {};
